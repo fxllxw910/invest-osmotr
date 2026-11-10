@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: invest-osmotr
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8080
+      - key: DATA_DIR
+        value: /data
+      - key: PUBLIC_URL
+        sync: false
+      - key: SMS_PROVIDER
+        value: smsru
+      - key: SMSRU_API_ID
+        sync: false
+    disk:
+      name: invest-osmotr-data
+      mountPath: /data
+      sizeGB: 1

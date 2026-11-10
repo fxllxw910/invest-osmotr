@@ -1,0 +1,15 @@
+{
+  "name": "invest-osmotr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ИНВЕСТ-осмотр: осмотр предметов лизинга с фотофиксацией и геоконтролем",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/run.js",
+    "test:only": "node test/e2e.js",
+    "test:address": "node test/address.js",
+    "test:css": "node test/css-audit.js",
+    "test:all": "node test/address.js && node test/run.js && node test/css-audit.js"
+  }
+}
