@@ -23,6 +23,17 @@ npm start
 Нужен только Node.js 18+ — зависимостей нет, данные лежат в JSON-файле
 (каталог меняется через `DATA_DIR`).
 
+## Публичная версия
+
+Код открыт: **https://github.com/fxllxw910/invest-osmotr**
+
+Демо-стенд разворачивается на Render одним нажатием (файл `render.yaml`
+уже в репозитории). После деплоя сервис будет доступен по адресу
+`https://<имя-сервиса>.onrender.com`, его нужно прописать в `PUBLIC_URL`,
+чтобы ссылки в SMS вели на публичный адрес, а не на `127.0.0.1`.
+
+Подробности и варианты хостинга — в разделе «Публикация» ниже.
+
 ## Демо-доступ
 
 | Роль | Телефон | Пароль |
@@ -194,32 +205,40 @@ test/address.js           разбор адреса и правила геоко
 test/css-audit.js         проверка классов CSS и старого бренда
 ```
 
-## Публикация на GitHub
+## Публикация
 
-Репозиторий: `https://github.com/fxllxw910/invest-osmotr` (публичный).
-
-```bash
-git init
-git add .
-git commit -m "ИНВЕСТ-осмотр: сервис фотофиксации с геоконтролем"
-git branch -M main
-git remote add origin https://github.com/fxllxw910/invest-osmotr.git
-git push -u origin main
-```
+Репозиторий: **https://github.com/fxllxw910/invest-osmotr** (публичный).
 
 GitHub Pages здесь не подойдёт: это Node.js-сервер с записью файлов на диск,
 а Pages умеет отдавать только статику. Чтобы сайт был доступен всем, нужен
 хостинг с контейнером:
 
-- **Render** — в репозитории есть `render.yaml`; создайте Blueprint и укажите
-  `PUBLIC_URL`, `SMS_PROVIDER`, `SMSRU_API_ID` в переменных окружения.
+- **Render (проще всего)** — в репозитории есть `render.yaml`. Откройте
+  https://render.com/deploy?repo=https://github.com/fxllxw910/invest-osmotr,
+  войдите через GitHub и подтвердите Blueprint. Дальше в переменных окружения
+  задайте `PUBLIC_URL` (Render подставит свой адрес вида
+  `https://invest-osmotr.onrender.com`), `SMS_PROVIDER` и ключ провайдера.
 - **Docker / VPS** — `Dockerfile` в корне, данные монтируются в `/data`.
 - **Fly.io / Railway** — тот же `Dockerfile`, порт из `PORT`.
 
-Обязательно задайте `PUBLIC_URL` (например `https://invest-osmotr.onrender.com`),
-иначе ссылки в SMS будут указывать на `127.0.0.1`. HTTPS нужен и для работы
-камеры: `getUserMedia` и точная геолокация доступны только в защищённом
-контексте.
+Обязательно задайте `PUBLIC_URL`, иначе ссылки в SMS будут указывать на
+`127.0.0.1`. HTTPS нужен и для работы камеры: `getUserMedia` и точная
+геолокация доступны только в защищённом контексте.
+
+Локальный запуск:
+
+```bash
+npm start                      # http://127.0.0.1:4173
+PORT=8080 HOST=0.0.0.0 npm start
+```
+
+Обновление кода на GitHub:
+
+```bash
+git add -A
+git commit -m "что изменилось"
+git push
+```
 
 ## Тесты
 
