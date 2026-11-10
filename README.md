@@ -226,6 +226,7 @@ GitHub Pages здесь не подойдёт: это Node.js-сервер с з
 ```bash
 npm test         # node test/run.js — поднимает свой сервер на свободном порту
 npm run test:address
+npm run test:sms # провайдеры SMS.RU и SMSC на локальных заглушках
 npm run test:css
 npm run test:all # всё подряд
 ```

@@ -9,7 +9,8 @@
     "test": "node test/run.js",
     "test:only": "node test/e2e.js",
     "test:address": "node test/address.js",
+    "test:sms": "node test/sms.js",
     "test:css": "node test/css-audit.js",
-    "test:all": "node test/address.js && node test/run.js && node test/css-audit.js"
+    "test:all": "node test/address.js && node test/sms.js && node test/run.js && node test/css-audit.js"
   }
 }
