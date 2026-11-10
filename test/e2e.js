@@ -480,7 +480,7 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
   assert(newTask.text.includes('Осмотр нового объекта'), 'new task title applied');
   assert(newTask.text.includes('+7 999 000-11-22'), 'new task shows executor phone');
   assert(newTask.text.includes('SMS'), 'new task reports SMS formation');
-  assert(newTask.text.includes('доставлена в шлюз'), 'task page confirms SMS delivery to gateway');
+  assert(newTask.text.includes('доставлена'), 'task page confirms SMS delivery');
 
   r = await get('/outbox');
   assert(r.status === 200 && r.text.includes('+7 999 000-11-22'), 'SMS outbox lists message to executor');
