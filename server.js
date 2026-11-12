@@ -917,7 +917,11 @@ async function handle(req, res) {
 function baseUrl(req) {
   if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, '');
   const host = req.headers.host || `127.0.0.1:${PORT}`;
-  return `http://${host}`;
+  const forwarded = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+  const proto = forwarded === 'https' || forwarded === 'http'
+    ? forwarded
+    : (/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host) ? 'http' : 'https');
+  return `${proto}://${host}`;
 }
 
 const MOBILE_UA = /Android|iPhone|iPad|iPod|Windows Phone|IEMobile|Opera Mini|BlackBerry|Mobile|Tablet/i;
