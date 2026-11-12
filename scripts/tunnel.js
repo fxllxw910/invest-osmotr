@@ -126,6 +126,23 @@ function updatePublishedLink(url) {
 }
 
 async function main() {
+  const lockFile = path.join(ROOT, '.tunnel.lock');
+  try {
+    const pid = Number(fs.readFileSync(lockFile, 'utf8').trim());
+    if (pid && pid !== process.pid) {
+      process.kill(pid, 0);
+      console.log(`сторож уже работает (pid ${pid}), выходим`);
+      return;
+    }
+  } catch {}
+  fs.writeFileSync(lockFile, String(process.pid));
+  const release = () => {
+    try {
+      if (Number(fs.readFileSync(lockFile, 'utf8').trim()) === process.pid) fs.unlinkSync(lockFile);
+    } catch {}
+  };
+  process.on('exit', release);
+
   log('=== сторож туннеля запущен ===');
   let current = null;
 

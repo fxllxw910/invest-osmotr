@@ -3,4 +3,5 @@ data/
 *.log
 .env
 .env.local
+.tunnel.lock
 .DS_Store
