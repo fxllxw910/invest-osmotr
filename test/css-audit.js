@@ -5,7 +5,7 @@ const path = require('path');
 const css = fs.readFileSync('public/assets/app.css', 'utf8');
 const defined = new Set([...css.matchAll(/\.([a-zA-Z][a-zA-Z0-9_-]*)/g)].map((m) => m[1]));
 
-const files = ['lib/views.js', 'lib/views-inspect.js', 'lib/views-site.js'];
+const files = ['lib/views.js', 'lib/views-inspect.js', 'lib/views-site.js', 'lib/views-legal.js'];
 const used = new Map();
 for (const f of files) {
   const s = fs.readFileSync(f, 'utf8');
@@ -37,7 +37,7 @@ if (missing.length) {
 }
 
 const brandLeaks = [];
-for (const f of ['lib/views.js', 'lib/views-inspect.js', 'lib/views-site.js', 'lib/brand.js', 'public/assets/app.css', 'server.js']) {
+for (const f of ['lib/views.js', 'lib/views-inspect.js', 'lib/views-site.js', 'lib/views-legal.js', 'lib/brand.js', 'public/assets/app.css', 'server.js']) {
   const s = fs.readFileSync(path.resolve(f), 'utf8');
   for (const bad of ['РОСОСМОТР', 'Рососмотр', 'rososmotr', 'ros_session']) {
     if (s.includes(bad)) brandLeaks.push(f + ' → ' + bad);

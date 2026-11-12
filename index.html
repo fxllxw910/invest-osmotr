@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -60,6 +60,19 @@
   .foot-links{margin-top:10px;display:flex;flex-wrap:wrap;gap:16px}
   .foot-links a{color:#8a7333;text-decoration:none;border-bottom:1px solid #e0d4ae}
   .foot-links a:hover{color:#5b4c22}
+  .cookie{
+    position:fixed;left:16px;right:16px;bottom:16px;z-index:60;max-width:760px;margin:0 auto;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:16px 18px;background:#fff;border:1px solid #e8dfc6;border-radius:16px;
+    box-shadow:0 18px 40px -20px rgba(58,50,24,.55);font-size:13.5px;
+  }
+  .cookie[hidden]{display:none}
+  .cookie p{margin:4px 0 0;color:#7a6b45;font-size:13px;line-height:1.5}
+  .cookie .txt{flex:1 1 320px;min-width:0}
+  .cookie .btn{padding:11px 20px;font-size:14px;border-radius:11px;box-shadow:none;cursor:pointer}
+  .cookie .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .cookie-consent{display:flex;gap:9px;align-items:flex-start;margin:10px 0 0;font-size:12.5px;cursor:pointer}
+  .cookie-consent input{flex:none;width:17px;height:17px;margin:1px 0 0;accent-color:#8a7333}
 </style>
 </head>
 <body>
@@ -79,6 +92,9 @@
 
   <h1>Дистанционные осмотры предметов лизинга</h1>
   <p class="lead">Заказчик назначает осмотр, исполнитель проходит его по ссылке со смартфона: фотофиксация только с камеры и проверка геопозиции на сервере.</p>
+  <div class="actions" style="margin-bottom:22px">
+    <a class="btn" href="mailto:il@chelinvest.ru">Связаться</a>
+  </div>
 
   <section class="card">
     <h2>Демо-стенд</h2>
@@ -123,8 +139,40 @@
     <div class="foot-links">
       <a href="mailto:il@chelinvest.ru">il@chelinvest.ru</a>
       <a href="https://investl.ru/" rel="noopener">investl.ru</a>
+      <a href="privacy.html">Политика обработки персональных данных</a>
     </div>
   </div>
 </footer>
+
+<div class="cookie" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Согласие на обработку персональных данных" hidden>
+  <div class="txt">
+    <b>Мы используем cookie</b>
+    <p>Файлы cookie нужны для входа в систему и корректной работы сайта. Продолжая пользоваться сайтом, вы соглашаетесь с <a href="privacy.html">политикой обработки персональных данных</a>.</p>
+    <label class="cookie-consent" for="cookie-consent">
+      <input type="checkbox" id="cookie-consent">
+      <span>Согласен на обработку персональных данных и использование cookie.</span>
+    </label>
+  </div>
+  <button class="btn" type="button" id="cookie-accept" disabled>Принять</button>
+</div>
+<script>
+(function () {
+  var KEY = 'io_cookie_ok';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var accepted = false;
+  try { accepted = localStorage.getItem(KEY) === '1'; } catch (e) { accepted = false; }
+  if (!accepted) banner.hidden = false;
+  var check = document.getElementById('cookie-consent');
+  var btn = document.getElementById('cookie-accept');
+  function sync() { if (btn && check) btn.disabled = !check.checked; }
+  if (check) { check.addEventListener('change', sync); sync(); }
+  if (btn) btn.addEventListener('click', function () {
+    if (check && !check.checked) return;
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    banner.hidden = true;
+  });
+})();
+</script>
 </body>
 </html>

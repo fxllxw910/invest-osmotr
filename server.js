@@ -21,6 +21,7 @@ const { seed, hashPassword, token, buildSteps } = require('./lib/seed');
 const V = require('./lib/views');
 const VI = require('./lib/views-inspect');
 const VS = require('./lib/views-site');
+const VL = require('./lib/views-legal');
 const sms = require('./lib/sms');
 const { zipStore, safeName } = require('./lib/zip');
 const { BRAND } = require('./lib/brand');
@@ -156,6 +157,11 @@ function parseForm(buf, contentType = '') {
   const out = {};
   for (const [k, v] of new URLSearchParams(text)) out[k] = v;
   return out;
+}
+
+function consentGiven(body) {
+  const v = String(body.consent == null ? '' : body.consent).trim().toLowerCase();
+  return v === '1' || v === 'on' || v === 'true' || v === 'yes';
 }
 
 function savePhoto(dataUrl, taskId) {
@@ -363,8 +369,9 @@ async function handle(req, res) {
 
   if (p === '/favicon.ico') return send(res, 204, '');
 
-  if (p === '/') {
+  if (p === '/' || p === '/privacy') {
     if (method === 'GET') {
+      if (p === '/privacy') return html(res, 200, VL.privacyPage({ user }));
       return html(res, 200, VS.homePage({ user }));
     }
   }
@@ -379,6 +386,12 @@ async function handle(req, res) {
       const found = verifyLogin(body.phone, body.password || '');
       if (!found) {
         return html(res, 401, V.loginPage({ error: 'Неверный номер телефона или пароль.', phone: body.phone }));
+      }
+      if (!consentGiven(body)) {
+        return html(res, 400, V.loginPage({
+          error: 'Чтобы войти, подтвердите согласие на обработку персональных данных.',
+          phone: body.phone,
+        }));
       }
       const sid = createSession(found);
       return redirect(res, '/app', {
@@ -471,6 +484,9 @@ async function handle(req, res) {
     const phone = sms.normalizePhone(body.executorPhone);
     if (phone.length !== 11) {
       return fail('Укажите телефон исполнителя в формате +7 XXX XXX-XX-XX');
+    }
+    if (!consentGiven(body)) {
+      return fail('Подтвердите согласие на обработку персональных данных исполнителя.');
     }
 
     let executor = store.users.find((u) => u.phone === phone && u.role === 'executor');

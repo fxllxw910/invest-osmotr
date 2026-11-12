@@ -97,7 +97,7 @@ function coordsFrom(html) {
 
 async function login(phone, password) {
   cookies = [];
-  return post('/login', { phone, password });
+  return post('/login', { phone, password, consent: '1' });
 }
 
 async function fillStep(taskId, sid, obj) {
@@ -152,6 +152,17 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
   assert(r.text.includes('7447167877') && r.text.includes('744701001'), 'landing shows ИНН and КПП');
   assert(!r.text.includes('/services') && !r.text.includes('/store'), 'landing has no removed sections');
   assert(r.text.includes('brandmark'), 'landing uses investl logo mark');
+  assert(!r.text.includes('Кабинет заказчика') && !r.text.includes('Кабинет исполнителя'),
+    'landing has no cabinet description cards');
+  assert(!r.text.includes('Фотографии, которые нельзя подменить'),
+    'landing has no photo-substitution block');
+  const loginLinks = [...r.text.matchAll(/href="\/login"[^>]*>([^<]*)</g)];
+  assert(loginLinks.length === 1 && /Войти/.test(loginLinks[0][1]),
+    'landing has exactly one login link (' + loginLinks.length + ')');
+  assert(r.text.includes('mailto:il@chelinvest.ru'), 'landing contact button opens mail client');
+  assert(r.text.includes('id="cookie-banner"') && r.text.includes('id="cookie-accept"'),
+    'landing renders a cookie banner');
+  assert(r.text.includes('href="/privacy"'), 'landing links to the privacy policy');
 
   r = await get('/login');
   assert(r.status === 200 && r.text.includes('Вход в систему'), 'GET /login renders login form');
@@ -159,6 +170,9 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
 
   r = await post('/login', { phone: '79514476815', password: 'wrong' });
   assert(r.status === 401 && r.text.includes('Неверный номер'), 'wrong password rejected');
+
+  r = await post('/login', { phone: '79514476815', password: 'Invest-74!' });
+  assert(r.status === 400 && r.text.includes('согласие на обработку'), 'login without consent is refused');
 
   r = await login('79514476815', 'Invest-74!');
   assert(r.status === 303 && r.location === '/app', 'executor login redirects to /app');
@@ -442,6 +456,7 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
     purpose: 'Проверка предмета лизинга',
     executorPhone: '+7 951 447-68-15',
     deadline: '2026-12-01',
+    consent: '1',
   });
   assert(r.status === 303 && /^\/tasks\/\d+\?/.test(r.location), 'client can assign a task to a brand-new object');
   const createdTask = await get(r.location);
@@ -454,15 +469,21 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
 
   r = await post('/api/tasks', {
     objectId: '__new', newTitle: '', newAddress: 'Челябинск', title: 'Без названия',
-    executorPhone: '+7 951 447-68-15', deadline: '2026-12-01',
+    executorPhone: '+7 951 447-68-15', deadline: '2026-12-01', consent: '1',
   });
   assert(r.status === 303 && /err=/.test(r.location), 'new object without a title is rejected with a message');
 
   r = await post('/api/tasks', {
     objectId: '__new', newTitle: 'Без адреса', newAddress: '', title: 'Без адреса',
-    executorPhone: '+7 951 447-68-15', deadline: '2026-12-01',
+    executorPhone: '+7 951 447-68-15', deadline: '2026-12-01', consent: '1',
   });
   assert(r.status === 303 && /err=/.test(r.location), 'new object without an address is rejected');
+
+  r = await post('/api/tasks', {
+    objectId: '1', title: 'Без согласия', executorPhone: '+7 999 000-11-33', deadline: '2026-12-01',
+  });
+  assert(r.status === 303 && /err=/.test(decodeURIComponent(r.location)) &&
+    decodeURIComponent(r.location).includes('согласие'), 'task without consent is rejected');
 
   // ------------------------------------------------ new task + SMS
   r = await post('/api/tasks', {
@@ -471,6 +492,7 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
     purpose: 'Тест назначения',
     executorPhone: '+7 999 000-11-22',
     deadline: '2026-12-01',
+    consent: '1',
   });
   assert(r.status === 303 && /^\/tasks\/\d+\?/.test(r.location), 'client can create a task');
   const newTask = await get(r.location);
@@ -605,10 +627,17 @@ function readZip(buf) {  const eocd = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0
   cookies = savedCookies;
 
   // ------------------------------------------------ removed pages
-  for (const page of ['/store', '/services', '/privacy', '/terms', '/nope-page']) {
+  for (const page of ['/store', '/services', '/terms', '/nope-page']) {
     r = await get(page);
     assert(r.status === 404 && r.text.includes('Ошибка 404'), 'removed/unknown route 404: ' + page);
   }
+
+  r = await get('/privacy');
+  assert(r.status === 200 && r.text.includes('Политика обработки персональных данных'),
+    'privacy policy page is available');
+  assert(r.text.includes('152-ФЗ') && r.text.includes('1107447002541') && r.text.includes('7447167877'),
+    'privacy policy states the operator and legal basis');
+  assert(r.text.includes('id="cookies"'), 'privacy policy has a cookie section anchor');
 
   r = await get('/api/health');
   assert(r.status === 200, 'health endpoint available');
