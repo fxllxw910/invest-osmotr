@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ИНВЕСТ-осмотр — платформа дистанционных осмотров</title>
+<meta name="theme-color" content="#c8af64">
+<meta name="description" content="ИНВЕСТ-осмотр — осмотр предметов лизинга с фотофиксацией с камеры и контролем геопозиции.">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:#241f12;
+    background:
+      radial-gradient(1200px 600px at 85% -10%,#f7f2e3 0%,transparent 60%),
+      radial-gradient(900px 500px at -10% 110%,#efe7cd 0%,transparent 55%),
+      #fbf8ef;
+    display:flex;flex-direction:column;
+  }
+  .wrap{width:100%;max-width:760px;margin:0 auto;padding:40px 20px 28px;flex:1}
+  .brand{display:flex;align-items:center;gap:14px;margin-bottom:30px}
+  .brand svg{width:46px;height:46px;flex:none}
+  .brand-name{font-size:20px;font-weight:700;letter-spacing:.01em}
+  .brand-sub{font-size:12.5px;text-transform:uppercase;letter-spacing:.13em;color:#8a7333}
+  h1{font-size:clamp(26px,5vw,38px);line-height:1.15;margin:0 0 14px;letter-spacing:-.01em}
+  .lead{margin:0 0 26px;font-size:17.5px;color:#4a4029;max-width:60ch}
+  .card{
+    background:#fff;border:1px solid #e8dfc6;border-radius:18px;
+    padding:24px;box-shadow:0 18px 40px -28px rgba(58,50,24,.55);
+    margin-bottom:18px;
+  }
+  .card h2{margin:0 0 8px;font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:#8a7333}
+  .card p{margin:0 0 16px;color:#4a4029}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    background:#c8af64;color:#241f12;text-decoration:none;font-weight:650;
+    padding:14px 24px;border-radius:12px;border:1px solid #b89f56;
+    transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+    box-shadow:0 10px 22px -14px rgba(58,50,24,.8);
+  }
+  .btn:hover{background:#d8c37c;transform:translateY(-1px)}
+  .btn:active{transform:none}
+  .btn-ghost{background:transparent;border-color:#d9cda8;box-shadow:none;font-weight:600;color:#5b4c22}
+  .btn-ghost:hover{background:#f7f2e3;transform:none}
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
+  .hint{font-size:13.5px;color:#7a6b45;margin:14px 0 0}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #f0e9d5}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#8a7333;font-weight:600}
+  td code{font:14px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f7f2e3;padding:2px 6px;border-radius:6px}
+  ul.feats{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+  ul.feats li{display:flex;gap:11px;align-items:flex-start;color:#4a4029}
+  ul.feats li b{color:#241f12}
+  .dot{width:22px;height:22px;flex:none;border-radius:50%;background:#f7f2e3;color:#8a7333;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px}
+  footer{border-top:1px solid #e8dfc6;background:#fbf8ef}
+  footer .wrap{padding:22px 20px 30px;font-size:13.5px;color:#6b5d3a}
+  footer div+div{margin-top:4px}
+  .foot-links{margin-top:10px;display:flex;flex-wrap:wrap;gap:16px}
+  .foot-links a{color:#8a7333;text-decoration:none;border-bottom:1px solid #e0d4ae}
+  .foot-links a:hover{color:#5b4c22}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 45 45" role="img" aria-label="ИНВЕСТ-осмотр">
+      <rect width="45" height="45" rx="10" fill="#c8af64"/>
+      <g transform="translate(4.5 4.5) scale(0.8)">
+        <path fill="none" stroke="#fff" stroke-width="2" d="M11.2074 5.63856C14.413 3.49284 18.2678 2.24148 22.4148 2.24148C33.5563 2.24148 42.5882 11.2734 42.5882 22.4148C42.5882 27.8285 40.4557 32.7441 36.985 36.3674V15.4353H35.0954L14.0093 35.5584H17.0201L28.5789 24.6601V31.3808H30.8204V22.5467L34.7435 18.8478V38.3838C31.3342 41.0197 27.0577 42.5882 22.4148 42.5882C11.2734 42.5882 2.24148 33.5563 2.24148 22.4148C2.24148 16.4402 4.83881 11.0721 8.96593 7.37825V31.099H10.8298L28.5789 15.3783V20.1733L30.8204 18.4922V12.0496H28.9566L11.2074 27.7702V5.63856ZM22.4148 0C10.0355 0 0 10.0355 0 22.4148C0 34.7942 10.0355 44.8297 22.4148 44.8297C34.7942 44.8297 44.8297 34.7942 44.8297 22.4148C44.8297 10.0355 34.7942 0 22.4148 0Z"/>
+      </g>
+    </svg>
+    <div>
+      <div class="brand-name">ИНВЕСТ-осмотр</div>
+      <div class="brand-sub">предметы лизинга</div>
+    </div>
+  </div>
+
+  <h1>Дистанционные осмотры предметов лизинга</h1>
+  <p class="lead">Заказчик назначает осмотр, исполнитель проходит его по ссылке со смартфона: фотофиксация только с камеры и проверка геопозиции на сервере.</p>
+
+  <section class="card">
+    <h2>Демо-стенд</h2>
+    <p>Рабочая версия приложения. Открывается на компьютере и телефоне; на ПК шаги съёмки намеренно заблокированы.</p>
+    <div class="actions">
+      <!--LIVE_START--><a id="live" class="btn" href="https://pqbzp-91-78-193-223.free.pinggy.net">Открыть демо&nbsp;→</a><!--LIVE_END-->
+      <a class="btn btn-ghost" href="https://github.com/fxllxw910/invest-osmotr">Исходный код</a>
+    </div>
+    <p class="hint">Стенд работает с этого компьютера через защищённый туннель. Если ссылка попросит подтверждение «Enter site» — это проверка туннеля, нажмите её один раз.</p>
+  </section>
+
+  <section class="card">
+    <h2>Демо-доступ</h2>
+    <table>
+      <thead>
+        <tr><th>Роль</th><th>Телефон</th><th>Пароль</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Исполнитель</td><td><code>79514476815</code></td><td><code>Invest-74!</code></td></tr>
+        <tr><td>Заказчик</td><td><code>79000000000</code></td><td><code>demo1234</code></td></tr>
+      </tbody>
+    </table>
+    <p class="hint">Съёмку открывайте на телефоне: на компьютере вместо камеры показывается просьба воспользоваться смартфоном.</p>
+  </section>
+
+  <section class="card">
+    <h2>Как это работает</h2>
+    <ul class="feats">
+      <li><span class="dot">1</span><div><b>Назначение.</b> Заказчик создаёт осмотр: адрес, объект, набор шагов.</div></li>
+      <li><span class="dot">2</span><div><b>Съёмка.</b> Исполнитель открывает ссылку на телефоне и снимает объект камерой — выбрать готовый файл из галереи нельзя.</div></li>
+      <li><span class="dot">3</span><div><b>Геоконтроль.</b> Координаты и точность проверяются на сервере: вне радиуса объекта или при грубой точности кадр не принимается.</div></li>
+      <li><span class="dot">4</span><div><b>Проверка.</b> Заказчик принимает кадры или отправляет на пересъёмку, получает уведомления по SMS и архив с фото.</div></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© ИНВЕСТ-осмотр</div>
+    <div>Правообладатель: ООО «ИНВЕСТ-лизинг», ОГРН 1107447002541, ИНН 7447167877, КПП 744701001</div>
+    <div>454084, Челябинская область, г. Челябинск, пр-кт Победы, д. 147а</div>
+    <div class="foot-links">
+      <a href="mailto:il@chelinvest.ru">il@chelinvest.ru</a>
+      <a href="https://investl.ru/" rel="noopener">investl.ru</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
