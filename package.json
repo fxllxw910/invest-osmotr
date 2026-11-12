@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "tunnel": "node scripts/tunnel.js",
     "test": "node test/run.js",
     "test:only": "node test/e2e.js",
     "test:address": "node test/address.js",
