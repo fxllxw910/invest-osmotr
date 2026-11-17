@@ -127,6 +127,23 @@ function redirect(res, to, extra = {}) {
   send(res, 303, '', { Location: to, ...extra });
 }
 
+function isAjax(req) {
+  const v = String(req.headers['x-requested-with'] || '').toLowerCase();
+  return v === 'fetch' || v === 'xmlhttprequest';
+}
+
+function json(res, status, data) {
+  send(res, status, JSON.stringify(data), { 'Content-Type': 'application/json; charset=utf-8' });
+}
+
+function ajaxOk(res, to) {
+  return json(res, 200, { ok: true, redirect: to });
+}
+
+function ajaxErr(res, status, error) {
+  return json(res, status, { ok: false, error });
+}
+
 function readBody(req, limit = MAX_BODY) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -400,12 +417,16 @@ async function handle(req, res) {
     }
   }
 
-  if (p === '/logout' && method === 'POST') {
-    const sid = parseCookies(req)[COOKIE];
-    const store = db.load();
-    store.sessions = store.sessions.filter((s) => s.sid !== sid);
-    db.save();
-    return redirect(res, '/login', { 'Set-Cookie': `${COOKIE}=; Path=/; Max-Age=0` });
+  if (p === '/logout') {
+    if (method === 'POST' || method === 'GET') {
+      const sid = parseCookies(req)[COOKIE];
+      const store = db.load();
+      store.sessions = store.sessions.filter((s) => s.sid !== sid);
+      db.save();
+      return redirect(res, '/login', {
+        'Set-Cookie': `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
+      });
+    }
   }
 
   if (p === '/app' || p === '/dashboard') {
@@ -707,17 +728,21 @@ async function handle(req, res) {
     }
     if (method === 'POST') {
       if (step.type !== 'text' && !isMobileRequest(req)) {
+        if (isAjax(req)) return ajaxErr(res, 403, 'Съёмка доступна только со смартфона');
         return html(res, 403, VI.inspectPage({ task, object: obj, step, user, desktop: true }));
       }
       const body = parseForm(await readBody(req), req.headers['content-type'] || '');
       const result = applyStep(task, obj, step, body, user);
       if (!result.ok) {
+        if (isAjax(req)) return ajaxErr(res, 400, result.error);
         return html(res, 400, VI.inspectPage({ task, object: obj, step, user, error: result.error }));
       }
       const okMsg = task.status === 'submitted'
         ? `Фото «${step.title}» переснято и отправлено заказчику на повторную проверку`
         : `Шаг «${step.title}» зафиксирован`;
-      return redirect(res, '/tasks/' + task.id + '?ok=' + encodeURIComponent(okMsg));
+      const to = '/tasks/' + task.id + '?ok=' + encodeURIComponent(okMsg);
+      if (isAjax(req)) return ajaxOk(res, to);
+      return redirect(res, to);
     }
   }
 
@@ -884,13 +909,16 @@ async function handle(req, res) {
     }
     if (method === 'POST') {
       if (step.type !== 'text' && !isMobileRequest(req)) {
+        if (isAjax(req)) return ajaxErr(res, 403, 'Съёмка доступна только со смартфона');
         return html(res, 403, VI.inspectPage({ task, object: obj, step, user: null, publicMode: true, desktop: true }));
       }
       const body = parseForm(await readBody(req), req.headers['content-type'] || '');
       const result = applyStep(task, obj, step, body, null);
       if (!result.ok) {
+        if (isAjax(req)) return ajaxErr(res, 400, result.error);
         return html(res, 400, VI.inspectPage({ task, object: obj, step, user: null, publicMode: true, error: result.error }));
       }
+      if (isAjax(req)) return ajaxOk(res, '/s/' + task.token);
       return redirect(res, '/s/' + task.token);
     }
   }

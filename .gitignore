@@ -5,3 +5,4 @@ data/
 .env.local
 .tunnel.lock
 .DS_Store
+scripts/.bin/
